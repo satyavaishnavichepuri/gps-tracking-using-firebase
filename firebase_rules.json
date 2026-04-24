@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "bus": {
+      "live": {
+        ".read": true,
+        ".write": true,
+        ".validate": true
+      }
+    }
+  }
+}

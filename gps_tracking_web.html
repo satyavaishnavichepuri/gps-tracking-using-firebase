@@ -5,21 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>College Bus GPS Tracker</title>
     
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-    
-    <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -33,7 +25,7 @@
             margin: 0 auto;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -47,7 +39,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .header h1 {
@@ -58,11 +50,7 @@
             gap: 12px;
         }
         
-        .status-badge {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        .status-badge { display: flex; gap: 15px; align-items: center; }
         
         .status-indicator {
             display: flex;
@@ -70,7 +58,7 @@
             gap: 6px;
             font-size: 14px;
             padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             border-radius: 20px;
             backdrop-filter: blur(10px);
         }
@@ -82,14 +70,8 @@
             animation: pulse 2s infinite;
         }
         
-        .status-dot.connected {
-            background: #4ade80;
-        }
-        
-        .status-dot.disconnected {
-            background: #ef4444;
-            animation: none;
-        }
+        .status-dot.connected { background: #4ade80; }
+        .status-dot.disconnected { background: #ef4444; animation: none; }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
@@ -109,14 +91,10 @@
             background: #f5f5f5;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        #map {
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
+        #map { width: 100%; height: 100%; z-index: 1; }
         
         .sidebar {
             width: 350px;
@@ -130,7 +108,7 @@
             background: white;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .info-panel h2 {
@@ -153,143 +131,42 @@
             font-size: 13px;
         }
         
-        .info-item:last-child {
-            border-bottom: none;
-        }
+        .info-item:last-child { border-bottom: none; }
+        .info-label { color: #666; font-weight: 500; }
+        .info-value { color: #333; font-weight: 600; font-family: 'Monaco', 'Courier New', monospace; }
         
-        .info-label {
-            color: #666;
-            font-weight: 500;
-        }
+        .map-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         
-        .info-value {
-            color: #333;
-            font-weight: 600;
-            font-family: 'Monaco', 'Courier New', monospace;
-        }
+        .leaflet-popup-content { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; }
         
-        .map-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
+        .popup-item { padding: 6px 0; display: flex; justify-content: space-between; gap: 10px; }
+        .popup-label { font-weight: 600; color: #667eea; }
+        .popup-value { color: #333; font-family: 'Monaco', 'Courier New', monospace; }
         
-        .leaflet-popup-content {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 13px;
-        }
+        .stats-panel { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 8px; padding: 15px; }
         
-        .popup-item {
-            padding: 6px 0;
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
+        .stat-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; }
+        .stat-label { color: #555; font-weight: 500; }
+        .stat-value { color: #667eea; font-weight: 700; font-family: 'Monaco', 'Courier New', monospace; }
         
-        .popup-label {
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .popup-value {
-            color: #333;
-            font-family: 'Monaco', 'Courier New', monospace;
-        }
-        
-        .stats-panel {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 8px;
-            padding: 15px;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 12px;
-        }
-        
-        .stat-label {
-            color: #555;
-            font-weight: 500;
-        }
-        
-        .stat-value {
-            color: #667eea;
-            font-weight: 700;
-            font-family: 'Monaco', 'Courier New', monospace;
-        }
-        
-        .no-data {
-            color: #999;
-            text-align: center;
-            padding: 30px 10px;
-            font-style: italic;
-        }
+        .no-data { color: #999; text-align: center; padding: 30px 10px; font-style: italic; }
         
         @media (max-width: 1024px) {
-            .content {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                max-height: 300px;
-                flex-direction: row;
-                overflow-x: auto;
-                overflow-y: hidden;
-            }
-            
-            .info-panel {
-                flex: 0 0 300px;
-            }
+            .content { flex-direction: column; }
+            .sidebar { width: 100%; max-height: 300px; flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+            .info-panel { flex: 0 0 300px; }
         }
         
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .sidebar {
-                flex-direction: column;
-                max-height: none;
-            }
-            
-            .info-panel {
-                flex: 1;
-            }
-        }
-
-        /* Loading animation */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading {
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-
-        /* Attribution style */
-        .attribution {
-            font-size: 11px !important;
-            color: #555 !important;
+            .header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .header h1 { font-size: 20px; }
+            .sidebar { flex-direction: column; max-height: none; }
+            .info-panel { flex: 1; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <h1>
                 <span class="map-icon">🚌</span>
@@ -307,16 +184,12 @@
             </div>
         </div>
 
-        <!-- Content Area -->
         <div class="content">
-            <!-- Map -->
             <div class="map-container">
                 <div id="map"></div>
             </div>
 
-            <!-- Sidebar with Info -->
             <div class="sidebar">
-                <!-- GPS Data Panel -->
                 <div class="info-panel">
                     <h2>📍 Current Location</h2>
                     <div id="gpsDataContainer" class="no-data">
@@ -324,7 +197,6 @@
                     </div>
                 </div>
 
-                <!-- Statistics Panel -->
                 <div class="info-panel">
                     <h2>📊 Statistics</h2>
                     <div class="stats-panel">
@@ -338,7 +210,7 @@
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Database Path:</span>
-                            <span class="stat-value" id="dbPath">/bus/live</span>
+                            <span class="stat-value">/bus/live</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Connection:</span>
@@ -351,8 +223,6 @@
     </div>
 
     <script>
-        // ==================== FIREBASE CONFIGURATION ====================
-        // Replace these with your Firebase project credentials
         const firebaseConfig = {
             apiKey: "AIzaSyDpB_ae1572NHRqNQfKMbXJapatO7DKdT4",
             authDomain: "themebasedprojectyr3.firebaseapp.com",
@@ -364,52 +234,29 @@
             measurementId: "G-17086YK6LB"
         };
 
-        // ==================== GLOBAL VARIABLES ====================
         let map;
         let busMarker = null;
         let markerCircle = null;
+        let busIcon = null;
         let db;
         let updateCount = 0;
         const FIREBASE_PATH = '/bus/live';
 
-        // ==================== MAP INITIALIZATION ====================
         function initMap() {
-            // Create map centered on India (default location)
             map = L.map('map').setView([20.5937, 78.9629], 5);
-
-            // Add OpenStreetMap tiles
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
-                maxZoom: 19,
-                className: 'attribution'
+                maxZoom: 19
             }).addTo(map);
 
-            // Custom bus icon
-            const busIcon = L.divIcon({
-                html: `
-                    <div style="
-                        width: 40px;
-                        height: 40px;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                        font-size: 20px;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                        border: 3px solid white;
-                    ">🚌</div>
-                `,
+            busIcon = L.divIcon({
+                html: `<div style="width:40px;height:40px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.3);border:3px solid white;">🚌</div>`,
                 iconSize: [40, 40],
                 iconAnchor: [20, 20],
                 popupAnchor: [0, -30]
             });
-
-            return busIcon;
         }
 
-        // ==================== GPS DATA UPDATE ====================
         function updateGPSMarker(data) {
             const lat = data.latitude;
             const lng = data.longitude;
@@ -419,14 +266,10 @@
             const hdop = data.hdop ? data.hdop.toFixed(2) : 'N/A';
             const timestamp = new Date().toLocaleTimeString();
 
-            // Update or create bus marker
             if (!busMarker) {
-                const busIcon = initMap();
                 busMarker = L.marker([lat, lng], { icon: busIcon }).addTo(map);
-                
-                // Create accuracy circle
                 markerCircle = L.circle([lat, lng], {
-                    radius: (hdop * 5), // Rough radius based on HDOP
+                    radius: (hdop * 5),
                     color: '#667eea',
                     weight: 2,
                     opacity: 0.3,
@@ -441,148 +284,63 @@
                 }
             }
 
-            // Create popup content
             const popupContent = `
-                <div style="min-width: 200px;">
-                    <div class="popup-item">
-                        <span class="popup-label">Latitude:</span>
-                        <span class="popup-value">${lat.toFixed(6)}</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">Longitude:</span>
-                        <span class="popup-value">${lng.toFixed(6)}</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">Speed:</span>
-                        <span class="popup-value">${speed} km/h</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">Altitude:</span>
-                        <span class="popup-value">${altitude} m</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">Satellites:</span>
-                        <span class="popup-value">${satellites}</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">HDOP:</span>
-                        <span class="popup-value">${hdop}</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">Course:</span>
-                        <span class="popup-value">${(data.course || 0).toFixed(1)}°</span>
-                    </div>
-                    <div class="popup-item">
-                        <span class="popup-label">Last Update:</span>
-                        <span class="popup-value">${timestamp}</span>
-                    </div>
+                <div style="min-width:200px;">
+                    <div class="popup-item"><span class="popup-label">Latitude:</span><span class="popup-value">${lat.toFixed(6)}</span></div>
+                    <div class="popup-item"><span class="popup-label">Longitude:</span><span class="popup-value">${lng.toFixed(6)}</span></div>
+                    <div class="popup-item"><span class="popup-label">Speed:</span><span class="popup-value">${speed} km/h</span></div>
+                    <div class="popup-item"><span class="popup-label">Altitude:</span><span class="popup-value">${altitude} m</span></div>
+                    <div class="popup-item"><span class="popup-label">Satellites:</span><span class="popup-value">${satellites}</span></div>
+                    <div class="popup-item"><span class="popup-label">HDOP:</span><span class="popup-value">${hdop}</span></div>
+                    <div class="popup-item"><span class="popup-label">Course:</span><span class="popup-value">${(data.course || 0).toFixed(1)}°</span></div>
+                    <div class="popup-item"><span class="popup-label">Last Update:</span><span class="popup-value">${timestamp}</span></div>
                 </div>
             `;
 
             busMarker.bindPopup(popupContent);
-
-            // Center map on bus
             map.setView([lat, lng], 16);
-
-            // Update sidebar
             updateSidebar(data, timestamp);
-
-            // Update status
             updateStatus('GPS', true);
-
-            // Increment update count
             updateCount++;
             document.getElementById('updateCount').textContent = updateCount;
             document.getElementById('lastUpdate').textContent = timestamp;
         }
 
-        // ==================== SIDEBAR UPDATE ====================
         function updateSidebar(data, timestamp) {
-            const gpsDataContainer = document.getElementById('gpsDataContainer');
-            
-            const html = `
-                <div class="info-item">
-                    <span class="info-label">Latitude:</span>
-                    <span class="info-value">${data.latitude.toFixed(6)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Longitude:</span>
-                    <span class="info-value">${data.longitude.toFixed(6)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Altitude:</span>
-                    <span class="info-value">${(data.altitude || 0).toFixed(1)} m</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Speed:</span>
-                    <span class="info-value">${(data.speed_kmh || 0).toFixed(2)} km/h</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Course:</span>
-                    <span class="info-value">${(data.course || 0).toFixed(1)}°</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Satellites:</span>
-                    <span class="info-value">${data.satellites || 0}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">HDOP:</span>
-                    <span class="info-value">${(data.hdop || 0).toFixed(2)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Date:</span>
-                    <span class="info-value">${data.date || '--'}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Time:</span>
-                    <span class="info-value">${data.time || '--'}</span>
-                </div>
+            document.getElementById('gpsDataContainer').innerHTML = `
+                <div class="info-item"><span class="info-label">Latitude:</span><span class="info-value">${data.latitude.toFixed(6)}</span></div>
+                <div class="info-item"><span class="info-label">Longitude:</span><span class="info-value">${data.longitude.toFixed(6)}</span></div>
+                <div class="info-item"><span class="info-label">Altitude:</span><span class="info-value">${(data.altitude || 0).toFixed(1)} m</span></div>
+                <div class="info-item"><span class="info-label">Speed:</span><span class="info-value">${(data.speed_kmh || 0).toFixed(2)} km/h</span></div>
+                <div class="info-item"><span class="info-label">Course:</span><span class="info-value">${(data.course || 0).toFixed(1)}°</span></div>
+                <div class="info-item"><span class="info-label">Satellites:</span><span class="info-value">${data.satellites || 0}</span></div>
+                <div class="info-item"><span class="info-label">HDOP:</span><span class="info-value">${(data.hdop || 0).toFixed(2)}</span></div>
+                <div class="info-item"><span class="info-label">Date:</span><span class="info-value">${data.date || '--'}</span></div>
+                <div class="info-item"><span class="info-label">Time:</span><span class="info-value">${data.time || '--'}</span></div>
             `;
-            
-            gpsDataContainer.innerHTML = html;
         }
 
-        // ==================== STATUS UPDATE ====================
         function updateStatus(type, isConnected) {
             if (type === 'Firebase') {
-                const fbStatus = document.getElementById('fbStatus');
-                const fbStatusText = document.getElementById('fbStatusText');
-                if (isConnected) {
-                    fbStatus.className = 'status-dot connected';
-                    fbStatusText.textContent = 'Firebase: Connected';
-                    document.getElementById('connectionStatus').textContent = 'Online';
-                } else {
-                    fbStatus.className = 'status-dot disconnected';
-                    fbStatusText.textContent = 'Firebase: Disconnected';
-                    document.getElementById('connectionStatus').textContent = 'Offline';
-                }
+                document.getElementById('fbStatus').className = isConnected ? 'status-dot connected' : 'status-dot disconnected';
+                document.getElementById('fbStatusText').textContent = isConnected ? 'Firebase: Connected' : 'Firebase: Disconnected';
+                document.getElementById('connectionStatus').textContent = isConnected ? 'Online' : 'Offline';
             } else if (type === 'GPS') {
-                const gpsStatus = document.getElementById('gpsStatus');
-                const gpsStatusText = document.getElementById('gpsStatusText');
-                if (isConnected) {
-                    gpsStatus.className = 'status-dot connected';
-                    gpsStatusText.textContent = 'GPS: Receiving';
-                } else {
-                    gpsStatus.className = 'status-dot disconnected';
-                    gpsStatusText.textContent = 'GPS: No Signal';
-                }
+                document.getElementById('gpsStatus').className = isConnected ? 'status-dot connected' : 'status-dot disconnected';
+                document.getElementById('gpsStatusText').textContent = isConnected ? 'GPS: Receiving' : 'GPS: No Signal';
             }
         }
 
-        // ==================== FIREBASE LISTENER ====================
         function setupFirebaseListener() {
             const dbRef = firebase.database().ref(FIREBASE_PATH);
-            
-            // Listen for data changes
             dbRef.on('value', (snapshot) => {
                 const data = snapshot.val();
-                
                 if (data) {
                     console.log('GPS Data Updated:', data);
                     updateGPSMarker(data);
                     updateStatus('Firebase', true);
                 } else {
-                    console.log('No data available at', FIREBASE_PATH);
+                    console.log('No data at', FIREBASE_PATH);
                 }
             }, (error) => {
                 console.error('Firebase error:', error);
@@ -590,28 +348,18 @@
             });
         }
 
-        // ==================== INITIALIZATION ====================
         window.addEventListener('load', () => {
-            console.log('Page loaded, initializing...');
-            
-            // Initialize Firebase
             try {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.database();
-                console.log('Firebase initialized successfully');
                 updateStatus('Firebase', true);
             } catch (error) {
-                console.error('Firebase initialization error:', error);
+                console.error('Firebase init error:', error);
                 updateStatus('Firebase', false);
             }
-            
-            // Initialize Map
+
             initMap();
-            console.log('Map initialized');
-            
-            // Setup Firebase Listener
             setupFirebaseListener();
-            console.log('Firebase listener setup complete');
         });
     </script>
 </body>

@@ -97,6 +97,7 @@ void loop() {
   while (gpsSerial.available() > 0) {
     char c = gpsSerial.read();
     gps.encode(c);
+    Serial.write(c);
   }
   if (millis() - lastSerialUpdate >= serialUpdateInterval) {
     updateSerialDisplay();

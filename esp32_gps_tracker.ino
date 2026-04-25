@@ -26,13 +26,14 @@
 
 // ==================== CONFIGURATION ====================
 // WiFi Credentials
-#define WIFI_SSID "boats"
-#define WIFI_PASSWORD "vaishh123"
+//check 25 april 2026 nirvana 2 44 am for next lines until host.
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 // Firebase Configuration
-#define API_KEY "AIzaSyDpB_ae1572NHRqNQfKMbXJapatO7DKdT4"
-#define DATABASE_URL "https://themebasedprojectyr3-default-rtdb.firebaseio.com"
-#define FIREBASE_HOST "themebasedprojectyr3-default-rtdb.asia-southeast1.firebasedatabase.app"
+#define API_KEY ""
+#define DATABASE_URL ""
+#define FIREBASE_HOST ""
 #define FIREBASE_PATH "/bus/live.json"
 
 // GPS Configuration

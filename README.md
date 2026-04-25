@@ -571,5 +571,4 @@ Your system is working correctly when:
 **Happy Tracking!** 🚌📍🌍
 
 For questions or improvements, refer to the comprehensive guides included in this package.
-#   g p s - t r a c k i n g - u s i n g - f i r e b a s e  
- 
+#
